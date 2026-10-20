@@ -1,25 +1,20 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using observer_pattern.ObserverPattern.Core;
-using observer_pattern.ObserverPattern.Objects;
+using observer_pattern.ObserverPattern.ObserverSystem.Events;
 
 namespace observer_pattern.ObserverPattern.ObserverSystem;
 
 public class UiManager : IObserver
 {
-    public Player Player;
-
     public Texture2D HealthTexture;
     public Vector2 Position;
     public Rectangle Bounds;
-
     public int Width;
     public int Height;
     
-    public UiManager(Player player)
+    public UiManager()
     {
-        Player = player;
-
         Width = 1000;
         Height = 40;
         
@@ -29,14 +24,10 @@ public class UiManager : IObserver
         Bounds = new((int)Position.X, (int)Position.Y, Width, Height);
     }
     
-    public void OnNotify(EventEnum receivedEvent)
+    public void OnNotify(IEvent receivedEvent)
     {
-        switch (receivedEvent)
-        {
-            case EventEnum.PlayerDecreaseHealth:
-                UpdateHealthBar();
-                break;
-        }
+        if (receivedEvent is OnDecreasedHealthEvent onDecreasedHealthEvent)
+            Width = (int)(onDecreasedHealthEvent.NewHealth * 8f);
     }
 
     public void Draw()
@@ -44,6 +35,4 @@ public class UiManager : IObserver
         Bounds = new((int)Position.X, (int)Position.Y, Width, Height);
         Globals.SpriteBatch.Draw(HealthTexture, Bounds, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
     }
-        
-    private void UpdateHealthBar() => Width = (int)(Player.Health * 8f);
 }

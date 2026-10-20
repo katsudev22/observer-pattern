@@ -2,11 +2,17 @@ using System.Collections.Generic;
 
 namespace observer_pattern.ObserverPattern.ObserverSystem;
 
-public interface ISubject
+public abstract class Subject
 {
-    public List<IObserver> Observers { get; protected set; }
-    
-    public void AddObserver(IObserver observer);
-    public void RemoveObserver(IObserver observer);
-    public void Notify(EventEnum sendingEvent);
+    public List<IObserver> Observers { get; private set; } = new();
+
+    public void AddObserver(IObserver observer) => Observers.Add(observer);
+
+    public void RemoveObserver(IObserver observer) => Observers.Remove(observer);
+
+    public void Notify(IEvent sendingEvent)
+    {
+        foreach (IObserver observer in Observers)
+            observer.OnNotify(sendingEvent);
+    }
 }

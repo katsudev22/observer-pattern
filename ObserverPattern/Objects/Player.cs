@@ -1,21 +1,21 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using observer_pattern.ObserverPattern.Core;
+using observer_pattern.ObserverPattern.Managers;
 using observer_pattern.ObserverPattern.ObserverSystem;
+using observer_pattern.ObserverPattern.ObserverSystem.Events;
 
 namespace observer_pattern.ObserverPattern.Objects;
 
-public class Player : ISubject
+public class Player : Subject
 {
-    public List<IObserver> Observers { get; set; }
-    
     public Texture2D Texture;
     public Vector2 Position;
     public Rectangle Bounds;
-
     public float Health;
+    public Vector2 Direction;
+    public float Speed;
     
     public Player(Vector2 position)
     {
@@ -23,25 +23,15 @@ public class Player : ISubject
         Texture.SetData([Color.YellowGreen]);
         Position = position;
         UpdateBounds();
-
         Health = 100f;
-        Observers = new();
-    }
-
-    public void AddObserver(IObserver observer) => Observers.Add(observer);
-
-    public void RemoveObserver(IObserver observer) => Observers.Remove(observer);
-    
-    public void Notify(EventEnum sendingEvent)
-    {
-        foreach (IObserver observer in Observers)
-            observer.OnNotify(sendingEvent);
+        Speed = 400f;
     }
     
     public void Update()
     {
         UpdateBounds();
         DecreaseHealth();
+        Movement();
     }
 
     public void Draw() =>
@@ -64,7 +54,22 @@ public class Player : ISubject
     {
         if (Health <= 0) return;
         Health -= 0.1f;
-        Notify(EventEnum.PlayerDecreaseHealth);
-        Console.WriteLine($"Health: {Health}");
+        
+        OnDecreasedHealthEvent onDecreasedHealthEvent = new(Health);
+        Notify(onDecreasedHealthEvent);
+    }
+
+    private void Movement()
+    {
+        Direction = Vector2.Zero;
+
+        if (InputManager.IsKeyDown(Keys.W)) Direction.Y -= 1;
+        if (InputManager.IsKeyDown(Keys.A)) Direction.X -= 1;
+        if (InputManager.IsKeyDown(Keys.D)) Direction.X += 1;
+        if (InputManager.IsKeyDown(Keys.S)) Direction.Y += 1;
+        
+        if (Direction != Vector2.Zero) Direction.Normalize();
+
+        Position += Direction * Speed * Globals.Time;
     }
 }

@@ -1,14 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using observer_pattern.ObserverPattern.Core;
+using observer_pattern.ObserverPattern.Managers;
 
 namespace observer_pattern;
 
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-
+    private GameManager _gameManager;
+    
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -18,33 +20,39 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
-
+        _graphics.PreferredBackBufferWidth = Globals.GameWindow.X;
+        _graphics.PreferredBackBufferHeight = Globals.GameWindow.Y;
+        _graphics.ApplyChanges();
+        
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        Globals.GraphicsDevice = GraphicsDevice;
+        Globals.SpriteBatch = new SpriteBatch(Globals.GraphicsDevice);
+        Globals.ContentManager = Content;
 
-        // TODO: use this.Content to load your game content here
+        _gameManager = new();
+        InputManager.Initialize();
     }
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
-
-        // TODO: Add your update logic here
+        Globals.Update(gameTime);
+        _gameManager.Update();
+        InputManager.Update();
 
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(Color.AntiqueWhite);
 
-        // TODO: Add your drawing code here
+        Globals.SpriteBatch.Begin();
+        _gameManager.Draw();
+        Globals.SpriteBatch.End();
 
         base.Draw(gameTime);
     }

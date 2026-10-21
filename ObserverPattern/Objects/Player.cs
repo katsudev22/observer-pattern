@@ -31,20 +31,10 @@ public class Player : Subject
     {
         UpdateBounds();
         DecreaseHealth();
-        Movement();
     }
 
     public void Draw() =>
         Globals.SpriteBatch.Draw(Texture, Position, Bounds, Color.White, 0f, new(25, 25), 1f, SpriteEffects.None, 0f);
-
-    public void OnCoinCollision(int coinId)
-    {
-        Health += 100f - Health;
-        OnHealthChangedEvent onHealthChangedEvent = new(Health);
-        OnCoinCollected onCoinCollected = new(coinId);
-        Notify(onHealthChangedEvent);
-        Notify(onCoinCollected);
-    }
     
     private void UpdateBounds()
     {
@@ -65,19 +55,5 @@ public class Player : Subject
         Health -= 0.1f;
         OnHealthChangedEvent onHealthChangedEvent = new(Health);
         Notify(onHealthChangedEvent);
-    }
-
-    private void Movement()
-    {
-        Direction = Vector2.Zero;
-
-        if (InputManager.IsKeyDown(Keys.W)) Direction.Y -= 1;
-        if (InputManager.IsKeyDown(Keys.A)) Direction.X -= 1;
-        if (InputManager.IsKeyDown(Keys.D)) Direction.X += 1;
-        if (InputManager.IsKeyDown(Keys.S)) Direction.Y += 1;
-        
-        if (Direction != Vector2.Zero) Direction.Normalize();
-
-        Position += Direction * Speed * Globals.Time;
     }
 }

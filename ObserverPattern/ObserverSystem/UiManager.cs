@@ -20,14 +20,14 @@ public class UiManager : IObserver
         
         HealthTexture = new(Globals.GraphicsDevice, 1, 1);
         HealthTexture.SetData([Color.IndianRed]);
-        Position = new(25, 25);
+        Position = new(10, 10);
         Bounds = new((int)Position.X, (int)Position.Y, Width, Height);
     }
     
     public void OnNotify(IEvent receivedEvent)
     {
-        if (receivedEvent is OnDecreasedHealthEvent onDecreasedHealthEvent)
-            Width = (int)(onDecreasedHealthEvent.NewHealth * 8f);
+        if (receivedEvent is OnHealthChangedEvent onHealthChangedEvent)
+            Width = (int)(onHealthChangedEvent.NewHealth * 8f);
     }
 
     public void Draw()

@@ -1,19 +1,25 @@
+using System;
 using System.Collections.Generic;
 using observer_pattern.ObserverPattern.Core;
+using observer_pattern.ObserverPattern.ObserverSystem;
+using observer_pattern.ObserverPattern.ObserverSystem.Events;
 
 namespace observer_pattern.ObserverPattern.Objects;
 
-public class CoinGenerator
+public class CoinGenerator : IObserver
 {
     public List<Coin> Coins { get; private set; }
     public float SpawnRate;
     public float SpawnCooldown;
+
+    private Random _random;
     
     public CoinGenerator()
     {
         Coins = new();
         SpawnRate = 0f;
         SpawnCooldown = 3f;
+        _random = new Random();
     }
 
     public void Update()
@@ -30,13 +36,19 @@ public class CoinGenerator
     private void SpawnCoin()
     {
         SpawnRate += Globals.Time;
-        
-        int positionX = Globals.GameWindow.X - 100;
-        int positionY = Globals.GameWindow.Y - 100;
-        
-        if (SpawnRate >= SpawnCooldown && Coins.Count <= 3)
-            Coins.Add(new(new(positionX, positionY)));
 
-        SpawnRate = 0f;
+        if (SpawnRate >= SpawnCooldown && Coins.Count <= 3)
+        {
+            int positionX = _random.Next(50, Globals.GameWindow.X - 50);
+            int positionY = _random.Next(50, Globals.GameWindow.Y - 50);   
+            Coins.Add(new(new(positionX, positionY)));
+            SpawnRate = 0f;
+        }
+    }
+
+    public void OnNotify(IEvent receivedEvent)
+    {
+        if (receivedEvent is OnCoinCollected onCoinCollected)
+            Coins.RemoveAt(onCoinCollected.CoinId);
     }
 }

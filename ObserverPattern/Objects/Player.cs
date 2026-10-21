@@ -36,6 +36,15 @@ public class Player : Subject
 
     public void Draw() =>
         Globals.SpriteBatch.Draw(Texture, Position, Bounds, Color.White, 0f, new(25, 25), 1f, SpriteEffects.None, 0f);
+
+    public void OnCoinCollision(int coinId)
+    {
+        Health += 100f - Health;
+        OnHealthChangedEvent onHealthChangedEvent = new(Health);
+        OnCoinCollected onCoinCollected = new(coinId);
+        Notify(onHealthChangedEvent);
+        Notify(onCoinCollected);
+    }
     
     private void UpdateBounds()
     {
@@ -54,9 +63,8 @@ public class Player : Subject
     {
         if (Health <= 0) return;
         Health -= 0.1f;
-        
-        OnDecreasedHealthEvent onDecreasedHealthEvent = new(Health);
-        Notify(onDecreasedHealthEvent);
+        OnHealthChangedEvent onHealthChangedEvent = new(Health);
+        Notify(onHealthChangedEvent);
     }
 
     private void Movement()

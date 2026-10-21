@@ -23,6 +23,7 @@ public class GameManager
     {
         Player.Update();
         CoinGenerator.Update();
+        VerifyCollisions();
     }
 
     public void Draw()
@@ -35,5 +36,16 @@ public class GameManager
     private void RegisterObservers()
     {
         Player.AddObserver(UiManager);
+        Player.AddObserver(CoinGenerator);
+    }
+
+    private void VerifyCollisions()
+    {
+        for (int i = 0; i < CoinGenerator.Coins.Count; i++)
+        {
+            Coin coin = CoinGenerator.Coins[i];
+            if (coin.Bounds.Intersects(Player.Bounds))
+                Player.OnCoinCollision(i);
+        }
     }
 }

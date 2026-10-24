@@ -10,7 +10,7 @@ I created an IObserver interface, which includes an OnNotify method triggered up
 in this way, the UI can receive relevant information from the player such as their current health without any tight coupling between the two entities!! it can also be used in achievement systems (like Robert Nystrom example) or other systems that should not require coupling (such as an AudioManager)
 
 # references
-https://en.wikipedia.org/wiki/Observer_pattern
+https://en.wikipedia.org/wiki/Observer_pattern<br>
 https://gameprogrammingpatterns.com/observer.html
 
 # project
